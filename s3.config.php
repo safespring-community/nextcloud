@@ -8,6 +8,7 @@ $CONFIG = array (
       'key'            => getenv('S3_KEY'),
       'secret'         => getenv('S3_SECRET'),
       'hostname'       => getenv('S3_HOSTNAME'),
+      'region'         => getenv('S3_REGION'),
       'use_ssl'        => true,
       'use_path_style' => true
     )
