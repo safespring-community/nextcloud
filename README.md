@@ -47,6 +47,8 @@ based on *.env_template files.
 
 #### Create S3 bucket
 
+If S3 is used as a primary storage, create the bucket before deploying the application 
+
     s3cmd mb s3://[BUCKET_NAME]
 
 #### Deploy
