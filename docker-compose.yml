@@ -71,6 +71,10 @@ services:
     depends_on:
       - proxy
 
+  smtp-server:
+    image: namshi/smtp
+    restart: always
+
 volumes:
   db:
   nextcloud:
