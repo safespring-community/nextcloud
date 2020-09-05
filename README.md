@@ -40,6 +40,7 @@ Set values in
 - db.env
 - redis.env
 - s3.env
+- mail.env
 
 based on *.env_template files.
 

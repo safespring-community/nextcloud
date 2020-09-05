@@ -25,6 +25,7 @@ services:
       - redis.env
       - s3.env
       - gss.env
+      - mail.env
     depends_on:
       - db
       - redis
