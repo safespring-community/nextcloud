@@ -113,6 +113,6 @@ Empty the bucket
 
     docker-compose up -d
 
-## Lookup server
+### Redeploy Nextcloud Server
 
-Check `lookup-server` directory.
+    ./redeploy.sh
