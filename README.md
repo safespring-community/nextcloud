@@ -30,8 +30,6 @@ Installation instructions: https://docs.docker.com/compose/install/
 
     docker build -t jakubkrzywda/nextcloud:apache .
 
-TODO: Add notes regarding S3 and GSS configuration (envsubst and occ).
-
 ### Deploying Nextcloud application
 
 #### Configure
@@ -47,7 +45,7 @@ based on *.env_template files.
 
 #### Create S3 bucket
 
-If S3 is used as a primary storage, create the bucket before deploying the application 
+If S3 is used as a primary storage, create the bucket before deploying the application
 
     s3cmd mb s3://[BUCKET_NAME]
 
@@ -57,9 +55,9 @@ If S3 is used as a primary storage, create the bucket before deploying the appli
 
 ### Administration
 
-Admin login to Global Site Selector: https://gss.nextcloud.dev.services.safedc.net/
+For the admin login to Global Site Selector use https://gss.dev.nextcloud.safedc.services/
 
-Admin login to the Nextcloud node: https://dc2.nextcloud.dev.services.safedc.net/index.php/login?direct=1
+For the admin login to the Nextcloud Server use `index.php/login?direct=1` suffix, for example: https://nx0.dev.nextcloud.safedc.services/index.php/login?direct=1
 
 ### Destroying the deployment
 
@@ -67,7 +65,7 @@ Admin login to the Nextcloud node: https://dc2.nextcloud.dev.services.safedc.net
 
     docker volume prune
 
-Warning: do not repeat too often in case of Let's Encrypt, otherwise you might hit a limit on [Certificates per Registered Domain (50 per week)](https://letsencrypt.org/docs/rate-limits/).
+Warning: do not redeploy the whole system too often in case when Let's Encrypt is used, otherwise you might hit a limit on [Certificates per Registered Domain (50 per week)](https://letsencrypt.org/docs/rate-limits/).
 
 ### Debugging
 
@@ -100,18 +98,17 @@ Create .s3cfg
     secret_key = ...
     use_https = True
 
+Create a bucket
+
+    s3cmd mb s3://[BUCKET_NAME]
+
 Empty the bucket
 
     s3cmd rm s3://[BUCKET_NAME] --recursive --force
 
-### Redeploy Nextcloud cluster
+Remove the bucket
 
-    docker rm -f nextcloud_app_1 nextcloud_cron_1 nextcloud_db_1 nextcloud_redis_1 nextcloud_proxy_1
-    docker volume prune -f
-    s3cmd rm s3://dc1-nextcloud-bucket --recursive --force
-    docker build --no-cache -t jakubkrzywda/nextcloud:apache .
-
-    docker-compose up -d
+    s3cmd rb s3://[BUCKET_NAME]
 
 ### Redeploy Nextcloud Server
 
