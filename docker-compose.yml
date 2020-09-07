@@ -14,11 +14,34 @@ services:
     image: redis:alpine
     restart: always
 
-  app:
+  app_A:
     image: jakubkrzywda/nextcloud:apache
     restart: always
     volumes:
       - nextcloud:/var/www/html
+    ports:
+      - "8081:80"
+    env_file:
+      - nextcloud.env
+      - db.env
+      - redis.env
+      - s3.env
+      - gss.env
+      - mail.env
+    depends_on:
+      - db
+      - redis
+    networks:
+      - proxy-tier
+      - default
+
+  app_B:
+    image: jakubkrzywda/nextcloud:apache
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html
+    ports:
+      - "8082:80"
     env_file:
       - nextcloud.env
       - db.env
