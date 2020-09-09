@@ -23,6 +23,8 @@ services:
         NEXTCLOUD_BASE_IMAGE: nextcloud:${NEXTCLOUD_VERSION}
     image: jakubkrzywda/nextcloud:${NEXTCLOUD_VERSION}
     restart: always
+    ports:
+      - "8080-8089:80"
     volumes:
       - nextcloud:/var/www/html
     env_file:
