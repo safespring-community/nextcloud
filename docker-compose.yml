@@ -5,20 +5,26 @@ services:
     image: mariadb
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     restart: always
+    networks:
+      - nextcloud
     volumes:
-      - db:/var/lib/mysql
+      - nextcloud-db:/var/lib/mysql
     env_file:
       - db.env
 
   redis:
     image: redis:alpine
     restart: always
+    networks:
+      - nextcloud
 
-  app:
+  nextcloud:
     image: jakubkrzywda/nextcloud:apache
+    ports:
+      - "8081:80"
     restart: always
     volumes:
-      - nextcloud:/var/www/html
+      - nextcloud-www:/var/www/html
     env_file:
       - nextcloud.env
       - db.env
@@ -30,58 +36,74 @@ services:
       - db
       - redis
     networks:
-      - proxy-tier
-      - default
+      - nextcloud
+    labels:
+      - traefik.protocol=http
+      - traefik.port=8081
+      - traefik.http.routers.nextcloud.middlewares=nextcloud,nextcloud_redirect
+      - traefik.http.routers.nextcloud.tls=true
+      - traefik.http.routers.nextcloud.entrypoints=websecure
+      - traefik.http.routers.nextcloud.tls.certresolver=myresolver
+      - traefik.http.routers.nextcloud.rule=Host(`nx1.dev.nextcloud.safedc.services`)
+      - traefik.http.middlewares.nextcloud.headers.customFrameOptionsValue=ALLOW-FROM https://nx1.dev.nextcloud.safedc.services
+      - traefik.http.middlewares.nextcloud.headers.contentSecurityPolicy=frame-ancestors 'self' nx1.dev.nextcloud.safedc.services *.nx1.dev.nextcloud.safedc.services
+      - traefik.http.middlewares.nextcloud.headers.stsSeconds=155520011
+      - traefik.http.middlewares.nextcloud.headers.stsIncludeSubdomains=true
+      - traefik.http.middlewares.nextcloud.headers.stsPreload=true
+      - traefik.http.middlewares.nextcloud_redirect.redirectregex.regex=/.well-known/(card|cal)dav
+      - traefik.http.middlewares.nextcloud_redirect.redirectregex.replacement=/remote.php/dav/            
 
   cron:
     image: nextcloud:apache
     restart: always
     volumes:
-      - nextcloud:/var/www/html
+      - nextcloud-www:/var/www/html
     entrypoint: /cron.sh
     depends_on:
       - db
       - redis
 
-  proxy:
-    build: ./proxy
-    restart: always
-    ports:
-      - 80:80
-      - 443:443
-    labels:
-      com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy: "true"
-    volumes:
-      - certs:/etc/nginx/certs:ro
-      - vhost.d:/etc/nginx/vhost.d
-      - html:/usr/share/nginx/html
-      - /var/run/docker.sock:/tmp/docker.sock:ro
-    networks:
-      - proxy-tier
-
-  letsencrypt-companion:
-    image: jrcs/letsencrypt-nginx-proxy-companion
-    restart: always
-    volumes:
-      - certs:/etc/nginx/certs
-      - vhost.d:/etc/nginx/vhost.d
-      - html:/usr/share/nginx/html
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-    networks:
-      - proxy-tier
-    depends_on:
-      - proxy
-
   smtp-server:
     image: namshi/smtp
     restart: always
 
+
+  traefik:
+    image: traefik:v2.2
+    restart: always
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.email=jakub@elastisys.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - nextcloud
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - letsencrypt:/letsencrypt
+
 volumes:
-  db:
-  nextcloud:
-  certs:
-  vhost.d:
-  html:
+  nextcloud-www:
+    driver: local
+  nextcloud-db:
+    driver: local
+  redis:
+    driver: local
+  letsencrypt:
+    driver: local
 
 networks:
-  proxy-tier:
+  nextcloud:
+    external: true
+
