@@ -15,7 +15,12 @@ services:
     restart: always
 
   app:
-    image: jakubkrzywda/nextcloud:apache
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXTCLOUD_BASE_IMAGE: nextcloud:${NEXTCLOUD_VERSION}
+    image: jakubkrzywda/nextcloud:${NEXTCLOUD_VERSION}
     restart: always
     volumes:
       - nextcloud:/var/www/html
@@ -34,7 +39,7 @@ services:
       - default
 
   cron:
-    image: nextcloud:apache
+    image: jakubkrzywda/nextcloud:${NEXTCLOUD_VERSION}
     restart: always
     volumes:
       - nextcloud:/var/www/html

@@ -1,4 +1,5 @@
-FROM nextcloud:apache
+ARG NEXTCLOUD_BASE_IMAGE=nextcloud:19.0-apache
+FROM ${NEXTCLOUD_BASE_IMAGE}
 
 # install envsubst required for S3 configuration
 RUN apt-get update && apt-get install -y gettext-base

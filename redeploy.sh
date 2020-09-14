@@ -15,7 +15,7 @@ then
   s3cmd rm s3://${S3_BUCKET} --recursive --force
 fi
 
-docker build --no-cache -t jakubkrzywda/nextcloud:apache .
+docker-compose build --no-cache
 docker-compose up -d
 
 echo "Nextcloud Server Redeployed"
