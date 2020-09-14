@@ -35,6 +35,9 @@ fi
 source nextcloud.env
 export NEXTCLOUD_VERSION
 docker-compose build --no-cache
+
+source redis.env # get redis password
+export REDIS_HOST_PASSWORD
 docker-compose up -d
 
 echo "Nextcloud Server Redeployed"
