@@ -1,0 +1,61 @@
+[
+    {
+        "mount_id": 1,
+        "mount_point": "\/Group1ExternalStorage",
+        "storage": "\\OCA\\Files_External\\Lib\\Storage\\AmazonS3",
+        "authentication_type": "amazons3::accesskey",
+        "configuration": {
+            "bucket": "nx3-group1-bucket",
+            "hostname": "${OBJECTSTORE_S3_HOST}",
+            "port": "",
+            "region": "${OBJECTSTORE_S3_REGION}",
+            "use_ssl": true,
+            "use_path_style": true,
+            "legacy_auth": false,
+            "key": "${OBJECTSTORE_S3_KEY}",
+            "secret": "${OBJECTSTORE_S3_SECRET}"
+        },
+        "options": {
+            "encrypt": true,
+            "previews": true,
+            "enable_sharing": false,
+            "filesystem_check_changes": 1,
+            "encoding_compatibility": false,
+            "readonly": false
+        },
+        "applicable_users": [],
+        "applicable_groups": [
+            "group1"
+        ]
+    },
+    {
+        "mount_id": 2,
+        "mount_point": "\/Group2ExternalStorage",
+        "storage": "\\OCA\\Files_External\\Lib\\Storage\\AmazonS3",
+        "authentication_type": "amazons3::accesskey",
+        "configuration": {
+            "bucket": "nx3-group2-bucket",
+            "hostname": "${OBJECTSTORE_S3_HOST}",
+            "port": "",
+            "region": "${OBJECTSTORE_S3_REGION}",
+            "use_ssl": true,
+            "use_path_style": true,
+            "legacy_auth": false,
+            "key": "${OBJECTSTORE_S3_KEY}",
+            "secret": "${OBJECTSTORE_S3_SECRET}"
+        },
+        "options": {
+            "encrypt": true,
+            "previews": true,
+            "enable_sharing": false,
+            "filesystem_check_changes": 1,
+            "encoding_compatibility": false,
+            "readonly": false
+        },
+        "applicable_users": [],
+        "applicable_groups": [
+            "group2"
+        ]
+    }
+]
+
