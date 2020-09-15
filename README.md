@@ -26,10 +26,6 @@ Installation instructions: https://docs.docker.com/compose/install/
 
 ## Nextcloud Global Site Selector and Nextcloud node
 
-### Building Docker image
-
-    docker build -t jakubkrzywda/nextcloud:apache .
-
 ### Deploying Nextcloud application
 
 #### Configure
@@ -39,20 +35,19 @@ Set values in
 - nextcloud.env
 - db.env
 - redis.env
+- gss.env
 - s3.env
 - mail.env
 
 based on *.env_template files.
 
-#### Create S3 bucket
-
-If S3 is used as a primary storage, create the bucket before deploying the application
-
-    s3cmd mb s3://[BUCKET_NAME]
+Note that even when configuration options are not needed in a particular deployment all of the .env files listed above have to exist.
 
 #### Deploy
 
-    docker-compose up -d
+Use `redeploy.sh` script to build docker images and deploy the complete solution
+
+    ./redeploy.sh
 
 ### Administration
 
@@ -60,13 +55,23 @@ For the admin login to Global Site Selector use https://gss.dev.nextcloud.safedc
 
 For the admin login to the Nextcloud Server use `index.php/login?direct=1` suffix, for example: https://nx0.dev.nextcloud.safedc.services/index.php/login?direct=1
 
+### Redeploy
+
+Use `redeploy.sh` script to redeploy the solution (except the Let's Encrypt container)
+
+    ./redeploy.sh
+
+`-e` - erase the primary S3 bucket
+
+`-p` - prune docker volumes (except the one with SSL certificates)
+
 ### Destroying the deployment
 
     docker-compose down
 
     docker volume prune
 
-Warning: do not redeploy the whole system too often in case when Let's Encrypt is used, otherwise you might hit a limit on [Certificates per Registered Domain (50 per week)](https://letsencrypt.org/docs/rate-limits/).
+Warning: do not prune the Let's Encrypt volumes too often, otherwise you might hit a limit on [Certificates per Registered Domain (50 per week)](https://letsencrypt.org/docs/rate-limits/).
 
 ### Debugging
 
@@ -110,7 +115,3 @@ Empty the bucket
 Remove the bucket
 
     s3cmd rb s3://[BUCKET_NAME]
-
-### Redeploy Nextcloud Server
-
-    ./redeploy.sh
