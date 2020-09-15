@@ -3,6 +3,7 @@ set -eu
 
 POSITIONAL=()
 ERASE_S3='0'
+PRUNE_VOLUMES='0'
 while [[ $# -gt 0 ]]
 do
 key="$1"
@@ -10,6 +11,10 @@ key="$1"
 case $key in
     -e|--erase)
     ERASE_S3='1'
+    shift # past argument
+    ;;
+    -p|--prune)
+    PRUNE_VOLUMES='1'
     shift # past argument
     ;;
     *)    # unknown option
@@ -23,7 +28,12 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 echo "Redeploying Nextcloud Server"
 
 docker rm -f nextcloud_app_1 nextcloud_cron_1 nextcloud_db_1 nextcloud_redis_1 nextcloud_proxy_1 || true
-docker volume prune -f
+
+if [ ${PRUNE_VOLUMES} == '1' ]
+then
+  echo "Pruning docker volumes with label com.docker.compose.project=nextcloud"
+  docker volume prune --force --filter label=com.docker.compose.project=nextcloud
+fi
 
 if [ ${ERASE_S3} == '1' ]
 then
