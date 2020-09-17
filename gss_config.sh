@@ -18,6 +18,7 @@ echo "GSS app installed"
 
 echo "Configuring GSS app"
 php /var/www/html/occ config:system:set gs.enabled --value=true
+php /var/www/html/occ config:system:set gs.federation --value=${GS_FEDERATION}
 php /var/www/html/occ config:system:set gss.jwt.key --value=${GSS_JWT_KEY}
 php /var/www/html/occ config:system:set gss.mode --value=${GSS_MODE}
 php /var/www/html/occ config:system:set lookup_server --value=${LOOKUP_SERVER}
