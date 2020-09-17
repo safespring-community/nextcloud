@@ -49,7 +49,7 @@ docker-compose build --no-cache
 
 source redis.env # get redis password
 export REDIS_HOST_PASSWORD
-docker-compose up -d
+docker-compose up -d --scale app=2
 
 echo "Nextcloud Server Redeployed"
 
