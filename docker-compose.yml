@@ -15,7 +15,7 @@ services:
     command: redis-server --requirepass ${REDIS_HOST_PASSWORD}
     restart: always
 
-  app:
+  app_0:
     build:
       context: .
       dockerfile: Dockerfile
@@ -23,6 +23,8 @@ services:
         NEXTCLOUD_BASE_IMAGE: nextcloud:${NEXTCLOUD_VERSION}
     image: jakubkrzywda/nextcloud:${NEXTCLOUD_VERSION}
     restart: always
+    ports:
+      - "8080:80"
     volumes:
       - nextcloud:/var/www/html
     env_file:
@@ -32,6 +34,38 @@ services:
       - s3.env
       - gss.env
       - mail.env
+    environment:
+      - VIRTUAL_HOST=worker0.nx1.dev.nextcloud.safedc.services,nx1.dev.nextcloud.safedc.services
+      - LETSENCRYPT_HOST=worker0.nx1.dev.nextcloud.safedc.services,nx1.dev.nextcloud.safedc.services
+    depends_on:
+      - db
+      - redis
+    networks:
+      - proxy-tier
+      - default
+
+  app_1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXTCLOUD_BASE_IMAGE: nextcloud:${NEXTCLOUD_VERSION}
+    image: jakubkrzywda/nextcloud:${NEXTCLOUD_VERSION}
+    restart: always
+    ports:
+      - "8081:80"
+    volumes:
+      - nextcloud:/var/www/html
+    env_file:
+      - nextcloud.env
+      - db.env
+      - redis.env
+      - s3.env
+      - gss.env
+      - mail.env
+    environment:
+      - VIRTUAL_HOST=worker1.nx1.dev.nextcloud.safedc.services,nx1.dev.nextcloud.safedc.services
+      - LETSENCRYPT_HOST=worker1.nx1.dev.nextcloud.safedc.services,nx1.dev.nextcloud.safedc.services
     depends_on:
       - db
       - redis

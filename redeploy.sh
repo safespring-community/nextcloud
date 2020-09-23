@@ -27,7 +27,8 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 echo "Redeploying Nextcloud Server"
 
-docker rm -f nextcloud_app_1 nextcloud_cron_1 nextcloud_db_1 nextcloud_redis_1 nextcloud_proxy_1 || true
+docker rm -f $(docker ps -q -f name=nextcloud_app*) || true
+docker rm -f nextcloud_cron_1 nextcloud_db_1 nextcloud_redis_1 nextcloud_proxy_1 || true
 
 if [ ${PRUNE_VOLUMES} == '1' ]
 then
