@@ -1,0 +1,31 @@
+From 160ad2747490a132aa9326c6d718f37e437a467b Mon Sep 17 00:00:00 2001
+From: Roeland Jago Douma <roeland@famdouma.nl>
+Date: Fri, 25 Sep 2020 09:26:37 +0200
+Subject: [PATCH] Handle failing SLO
+
+If the SLO throws an error we should catch it. This is so that we do not
+show an error page. We should also still logout the current session.
+
+Signed-off-by: Roeland Jago Douma <roeland@famdouma.nl>
+---
+ lib/Controller/SAMLController.php | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/lib/Controller/SAMLController.php b/lib/Controller/SAMLController.php
+index ef4b49b6..40409122 100644
+--- a/lib/Controller/SAMLController.php
++++ b/lib/Controller/SAMLController.php
+@@ -406,7 +406,12 @@ public function singleLogoutService() {
+ 				$nameIdNameQualifier = $this->session->get('user_saml.samlNameIdNameQualifier');
+ 				$nameIdSPNameQualifier = $this->session->get('user_saml.samlNameIdSPNameQualifier');
+ 				$sessionIndex = $this->session->get('user_saml.samlSessionIndex');
+-				$targetUrl = $auth->logout(null, [], $nameId, $sessionIndex, $stay, $nameIdFormat, $nameIdNameQualifier, $nameIdSPNameQualifier);
++				try {
++					$targetUrl = $auth->logout(null, [], $nameId, $sessionIndex, $stay, $nameIdFormat, $nameIdNameQualifier, $nameIdSPNameQualifier);
++				} catch (Error $e) {
++					$this->logger->logException($e, ['level' => ILogger::WARN]);
++					$this->userSession->logout();
++				}
+ 			}
+ 			if(!empty($targetUrl) && !$auth->getLastErrorReason()){
+ 				$this->userSession->logout();
