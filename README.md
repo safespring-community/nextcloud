@@ -73,6 +73,14 @@ Use `redeploy.sh` script to redeploy the solution (except the Let's Encrypt cont
 
 Warning: do not prune the Let's Encrypt volumes too often, otherwise you might hit a limit on [Certificates per Registered Domain (50 per week)](https://letsencrypt.org/docs/rate-limits/).
 
+### Upgrade Nextcloud version
+
+To upgrade the version of Nextcloud in use:
+
+1. In `nextcloud.env` file, modify the value of `NEXTCLOUD_VERSION` and set it to a valid tag of Nextcloud's official docker images. You can find a list of tags [here](https://hub.docker.com/_/nextcloud/?tab=tags).
+
+2. Redeploy the environment using `redeploy.sh` script.
+
 ### Debugging
 
 #### Docker logs
