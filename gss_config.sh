@@ -9,7 +9,7 @@ do
 done
 
 echo "Installing GSS app"
-while ! php /var/www/html/occ app:enable globalsiteselector | grep -q 'globalsiteselector already enabled'
+while ! php /var/www/html/occ app:enable globalsiteselector | grep -q 'globalsiteselector already enabled\|globalsiteselector enabled'
 do
   echo "GSS app installation failed, retry in 5 seconds"
   sleep 5
